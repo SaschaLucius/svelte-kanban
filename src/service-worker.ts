@@ -5,13 +5,20 @@ import { build, files, version } from '$service-worker';
 
 declare const self: ServiceWorkerGlobalScope;
 
-// Create a unique cache name for this deployment
-const CACHE = `cache-${version}`;
+const scopePath = new URL(self.registration.scope).pathname.replace(/\/$/, '') || '/';
+const cacheNamespace = `svelte-kanban:${scopePath.replace(/\//g, '_')}`;
+const CACHE = `${cacheNamespace}:${version}`;
 
 const ASSETS = [
 	...build, // the app itself
 	...files // everything in the static directory
 ];
+
+function isInScope(url: URL) {
+	if (url.origin !== self.location.origin) return false;
+	if (scopePath === '/') return true;
+	return url.pathname === scopePath || url.pathname.startsWith(`${scopePath}/`);
+}
 
 // Install the service worker
 self.addEventListener('install', (event) => {
@@ -26,14 +33,26 @@ self.addEventListener('install', (event) => {
 
 // Activate the service worker
 self.addEventListener('activate', (event) => {
-	// Remove previous cached data from disk
+	// Remove only this app's previous cache versions
 	async function deleteOldCaches() {
 		const keys = await caches.keys();
 		await Promise.all(
 			keys.map((key) => {
-				if (key !== CACHE) return caches.delete(key);
+				if (key.startsWith(`${cacheNamespace}:`) && key !== CACHE) return caches.delete(key);
 			})
 		);
+
+		// Keep this cache namespace clean and scoped to this app path
+		const cache = await caches.open(CACHE);
+		const requests = await cache.keys();
+		await Promise.all(
+			requests.map((request) => {
+				const requestUrl = new URL(request.url);
+				if (!isInScope(requestUrl)) return cache.delete(request);
+			})
+		);
+
+		await self.clients.claim();
 	}
 
 	event.waitUntil(deleteOldCaches());
@@ -45,6 +64,10 @@ self.addEventListener('fetch', (event) => {
 	const url = new URL(event.request.url);
 	if (url.protocol !== 'http:' && url.protocol !== 'https:') {
 		return; // Let the browser handle non-HTTP requests normally
+	}
+
+	if (!isInScope(url)) {
+		return;
 	}
 
 	// Try the network first, falling back to cache if network fails
@@ -62,7 +85,7 @@ self.addEventListener('fetch', (event) => {
 				if (event.request.method === 'GET') {
 					try {
 						// Wrap cache.put in try/catch to handle any unexpected caching errors
-						cache.put(event.request, response.clone());
+						await cache.put(event.request, response.clone());
 					} catch (error) {
 						console.error('Failed to cache response:', error);
 					}

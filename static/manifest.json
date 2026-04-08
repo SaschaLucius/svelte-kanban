@@ -2,13 +2,15 @@
 	"name": "Svelte Kanban",
 	"short_name": "Kanban",
 	"description": "A local-first Kanban board for organizing tasks",
-	"start_url": "/svelte-kanban/",
+	"id": "./",
+	"start_url": "./",
+	"scope": "./",
 	"display": "standalone",
 	"background_color": "#f9f9f9",
 	"theme_color": "#ffffff",
 	"icons": [
 		{
-			"src": "/favicon.png",
+			"src": "favicon.png",
 			"sizes": "192x192",
 			"type": "image/png"
 		}

@@ -74,6 +74,29 @@ To set this up for your own repository:
 3. Set the source to "GitHub Actions"
 4. Push changes to the main branch to trigger a deployment
 
+### PWA Path Configuration (GitHub Pages)
+
+When deploying under a repository path (for example `/your-repo-name`), keep these settings aligned so the PWA does not leak scope or cache behavior into other apps on the same domain:
+
+1. Set the SvelteKit base path in `svelte.config.js`:
+
+   ```js
+	paths: {
+		base: dev ? '' : '/your-repo-name';
+	}
+   ```
+
+2. Keep `static/manifest.json` path-safe by using relative values:
+
+   - `id: "./"`
+   - `start_url: "./"`
+   - `scope: "./"`
+   - icon sources like `"favicon.png"` (no leading `/`)
+
+3. Register the service worker under the app base path and scope only.
+
+4. Use a cache namespace that includes the app scope, and only delete old caches in that namespace during activation.
+
 ## How to Use
 
 ### Adding Tasks

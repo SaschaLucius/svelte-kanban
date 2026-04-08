@@ -13,12 +13,13 @@
 		<div style="display: contents">%sveltekit.body%</div>
 		<script>
 			if ('serviceWorker' in navigator) {
-				// Get base path from the SvelteKit runtime
-				const base =
-					document.querySelector('meta[name="sveltekit:base"]')?.getAttribute('content') || '';
+				const base = '%sveltekit.assets%';
 
 				navigator.serviceWorker
-					.register(base + '/service-worker.js', { type: 'module' })
+					.register(base + '/service-worker.js', {
+						type: 'module',
+						scope: (base || '') + '/'
+					})
 					.then((reg) => console.log('Service worker registered', reg))
 					.catch((err) => console.error('Service worker registration failed', err));
 			}
