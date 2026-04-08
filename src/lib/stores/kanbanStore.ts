@@ -16,6 +16,29 @@ const checkForResetParam = (): boolean => {
 	return urlParams.has('reset');
 };
 
+// Request persistent storage so browser eviction is less likely.
+const requestPersistentStorage = async (): Promise<void> => {
+	if (typeof window === 'undefined') return;
+	if (!('storage' in navigator) || !navigator.storage) return;
+	if (typeof navigator.storage.persist !== 'function') return;
+
+	try {
+		const alreadyPersisted =
+			typeof navigator.storage.persisted === 'function'
+				? await navigator.storage.persisted()
+				: false;
+
+		if (!alreadyPersisted) {
+			const granted = await navigator.storage.persist();
+			if (!granted) {
+				console.warn('Persistent storage permission was not granted by the browser');
+			}
+		}
+	} catch (error) {
+		console.warn('Failed to request persistent storage', error);
+	}
+};
+
 // IndexedDB configuration
 const DB_NAME = 'kanban-db';
 const DB_VERSION = 1;
@@ -131,6 +154,8 @@ const createKanbanStore = () => {
 
 	// Load state from IndexedDB when browser is available
 	if (typeof window !== 'undefined') {
+		void requestPersistentStorage();
+
 		loadState()
 			.then((state) => {
 				// Ensure lastBackupDate exists

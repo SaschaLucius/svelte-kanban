@@ -10,6 +10,7 @@
 	let showBackupReminder = false;
 	let showFileDropZone = false;
 	let lastBackupDate: string | null = null;
+	let showStoragePersistenceIndicator = false;
 
 	// Subscribe to the store
 	const unsubscribe = kanbanStore.subscribe((state) => {
@@ -75,6 +76,27 @@
 
 	// Check for backup needs
 	onMount(async () => {
+		if (
+			typeof window !== 'undefined' &&
+			'storage' in navigator &&
+			navigator.storage &&
+			typeof navigator.storage.persisted === 'function'
+		) {
+			try {
+				let persisted = await navigator.storage.persisted();
+
+				if (!persisted && typeof navigator.storage.persist === 'function') {
+					// Ask for persistence and then re-check authoritative status.
+					await navigator.storage.persist();
+					persisted = await navigator.storage.persisted();
+				}
+
+				showStoragePersistenceIndicator = !persisted;
+			} catch (error) {
+				console.warn('Failed to check persistent storage status', error);
+			}
+		}
+
 		// Check if we need a backup reminder and if there are stickies to back up
 		const needsBackup = await kanbanStore.needsBackupReminder();
 
@@ -132,6 +154,12 @@
 </script>
 
 <main>
+	{#if showStoragePersistenceIndicator}
+		<div class="storage-indicator" role="status" aria-live="polite">
+			Storage persistence is not enabled yet. Your browser may clear data under storage pressure.
+		</div>
+	{/if}
+
 	<div class="board">
 		{#each COLUMNS as column}
 			<Column
@@ -156,6 +184,16 @@
 		width: 100%;
 		overflow: hidden;
 		box-sizing: border-box;
+	}
+
+	.storage-indicator {
+		background: #fff3cd;
+		border: 1px solid #f0d98a;
+		color: #5f4b07;
+		font-size: 0.9rem;
+		padding: 8px 12px;
+		margin: 8px 8px 0;
+		border-radius: 8px;
 	}
 
 	.board {
@@ -197,6 +235,12 @@
 	}
 
 	@media (max-width: 768px) {
+		.storage-indicator {
+			font-size: 0.85rem;
+			padding: 7px 10px;
+			margin: 6px 5px 0;
+		}
+
 		.board {
 			padding: 5px;
 			gap: 6px;
