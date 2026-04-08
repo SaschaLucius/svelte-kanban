@@ -22,11 +22,11 @@ const config = {
 			strict: true
 		}),
 		serviceWorker: {
-			register: false, // We register it manually in app.html
+			register: false // We register it manually in app.html
 		},
 		paths: {
 			// For GitHub Pages deployment
-			base: dev ? '' : '/svelte-kanban',
+			base: dev ? '' : '/svelte-kanban'
 		}
 	}
 };

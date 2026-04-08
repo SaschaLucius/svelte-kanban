@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -14,9 +14,11 @@
 		<script>
 			if ('serviceWorker' in navigator) {
 				// Get base path from the SvelteKit runtime
-				const base = document.querySelector('meta[name="sveltekit:base"]')?.getAttribute('content') || '';
-				
-				navigator.serviceWorker.register(base + '/service-worker.js', { type: 'module' })
+				const base =
+					document.querySelector('meta[name="sveltekit:base"]')?.getAttribute('content') || '';
+
+				navigator.serviceWorker
+					.register(base + '/service-worker.js', { type: 'module' })
 					.then((reg) => console.log('Service worker registered', reg))
 					.catch((err) => console.error('Service worker registration failed', err));
 			}

@@ -15,6 +15,7 @@ A local-first Kanban board built with Svelte, TypeScript, and PWA features. This
 ## Columns
 
 The board has four predefined columns:
+
 - Backlog
 - To Do
 - In Progress
@@ -25,17 +26,20 @@ The board has four predefined columns:
 ### Development
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/yourusername/svelte-kanban.git
    cd svelte-kanban
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Start the development server:
+
    ```bash
    npm run dev
    ```

@@ -23,8 +23,9 @@ You **MUST** use the Svelte 5 API unless explicitly tasked to write Svelte 4 syn
 - `$state` creates reactive variables that update the UI automatically. For example:
   ```svelte
   <script>
-    let count = $state(0);
+  	let count = $state(0);
   </script>
+
   <button onclick={() => count++}>Clicked: {count}</button>
   ```
 - Do **NOT** complicate state management by wrapping it in custom objects; instead, update reactive variables directly.  
@@ -66,10 +67,10 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let counter = $state({ count: 0 });
-  function logSnapshot() {
-    console.log($state.snapshot(counter));
-  }
+	let counter = $state({ count: 0 });
+	function logSnapshot() {
+		console.log($state.snapshot(counter));
+	}
 </script>
 ```
 
@@ -99,9 +100,10 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let count = $state(0);
-  let doubled = $derived(count * 2);
+	let count = $state(0);
+	let doubled = $derived(count * 2);
 </script>
+
 <button onclick={() => count++}>{doubled}</button>
 ```
 
@@ -114,12 +116,12 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let numbers = $state([1, 2, 3]);
-  let total = $derived.by(() => {
-    let sum = 0;
-    for (const n of numbers) sum += n;
-    return sum;
-  });
+	let numbers = $state([1, 2, 3]);
+	let total = $derived.by(() => {
+		let sum = 0;
+		for (const n of numbers) sum += n;
+		return sum;
+	});
 </script>
 ```
 
@@ -131,12 +133,16 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let post = $props().post;
-  let likes = $derived(post.likes);
-  async function onclick() {
-    likes += 1;
-    try { await post.like(); } catch { likes -= 1; }
-  }
+	let post = $props().post;
+	let likes = $derived(post.likes);
+	async function onclick() {
+		likes += 1;
+		try {
+			await post.like();
+		} catch {
+			likes -= 1;
+		}
+	}
 </script>
 ```
 
@@ -149,10 +155,10 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let size = $state(50);
-  $effect(() => {
-    console.log('Size changed:', size);
-  });
+	let size = $state(50);
+	$effect(() => {
+		console.log('Size changed:', size);
+	});
 </script>
 ```
 
@@ -165,11 +171,13 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let count = $state(0);
-  $effect(() => {
-    const interval = setInterval(() => { count += 1; }, 1000);
-    return () => clearInterval(interval);
-  });
+	let count = $state(0);
+	$effect(() => {
+		const interval = setInterval(() => {
+			count += 1;
+		}, 1000);
+		return () => clearInterval(interval);
+	});
 </script>
 ```
 
@@ -181,10 +189,10 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let div = $state();
-  $effect.pre(() => {
-    if (div) console.log('Running before DOM update');
-  });
+	let div = $state();
+	$effect.pre(() => {
+		if (div) console.log('Running before DOM update');
+	});
 </script>
 ```
 
@@ -196,9 +204,9 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  $effect(() => {
-    console.log('Inside effect, tracking:', $effect.tracking());
-  });
+	$effect(() => {
+		console.log('Inside effect, tracking:', $effect.tracking());
+	});
 </script>
 ```
 
@@ -211,13 +219,13 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let count = $state(0);
-  const cleanup = $effect.root(() => {
-    $effect(() => {
-      console.log('Count is:', count);
-    });
-    return () => console.log('Root effect cleaned up');
-  });
+	let count = $state(0);
+	const cleanup = $effect.root(() => {
+		$effect(() => {
+			console.log('Count is:', count);
+		});
+		return () => console.log('Root effect cleaned up');
+	});
 </script>
 ```
 
@@ -230,8 +238,9 @@ person = { name: 'Heraclitus', age: 50 }; // Correct way to update
 
 ```svelte
 <script>
-  let { adjective } = $props();
+	let { adjective } = $props();
 </script>
+
 <p>This component is {adjective}</p>
 ```
 
@@ -261,8 +270,9 @@ let { a, b, ...others } = $props();
 
 ```svelte
 <script>
-  const uid = $props.id();
+	const uid = $props.id();
 </script>
+
 <label for="{uid}-firstname">First Name:</label>
 <input id="{uid}-firstname" type="text" />
 ```
@@ -275,9 +285,10 @@ let { a, b, ...others } = $props();
 
 ```svelte
 <script>
-  let { value = $bindable() } = $props();
+	let { value = $bindable() } = $props();
 </script>
-<input bind:value={value} />
+
+<input bind:value />
 ```
 
 - Do **NOT** overuse bindable props; instead, default to one-way data flow unless bi-directionality is truly needed.  
@@ -289,10 +300,11 @@ let { a, b, ...others } = $props();
 
 ```svelte
 <script>
-  function dispatch(type) {
-    $host().dispatchEvent(new CustomEvent(type));
-  }
+	function dispatch(type) {
+		$host().dispatchEvent(new CustomEvent(type));
+	}
 </script>
+
 <button onclick={() => dispatch('increment')}>Increment</button>
 ```
 
@@ -305,10 +317,10 @@ let { a, b, ...others } = $props();
   _Example:_
   ```svelte
   {#snippet figure(image)}
-    <figure>
-      <img src={image.src} alt={image.caption} width={image.width} height={image.height} />
-      <figcaption>{image.caption}</figcaption>
-    </figure>
+  	<figure>
+  		<img src={image.src} alt={image.caption} width={image.width} height={image.height} />
+  		<figcaption>{image.caption}</figcaption>
+  	</figure>
   {/snippet}
   ```
 - **Parameterization:**  
@@ -316,7 +328,7 @@ let { a, b, ...others } = $props();
   _Example with parameters:_
   ```svelte
   {#snippet name(param1, param2)}
-    <!-- snippet markup here -->
+  	<!-- snippet markup here -->
   {/snippet}
   ```
 
@@ -327,10 +339,11 @@ let { a, b, ...others } = $props();
   _Example:_
   ```svelte
   <script>
-    let { message = "it's great to see you!" } = $props();
+  	let { message = "it's great to see you!" } = $props();
   </script>
+
   {#snippet hello(name)}
-    <p>hello {name}! {message}!</p>
+  	<p>hello {name}! {message}!</p>
   {/snippet}
   {@render hello('alice')}
   ```
@@ -345,23 +358,24 @@ let { a, b, ...others } = $props();
   _Example:_
   ```svelte
   <script>
-    import Table from './Table.svelte';
-    const fruits = [
-      { name: 'apples', qty: 5, price: 2 },
-      { name: 'bananas', qty: 10, price: 1 }
-    ];
+  	import Table from './Table.svelte';
+  	const fruits = [
+  		{ name: 'apples', qty: 5, price: 2 },
+  		{ name: 'bananas', qty: 10, price: 1 }
+  	];
   </script>
+
   {#snippet header()}
-    <th>fruit</th>
-    <th>qty</th>
-    <th>price</th>
-    <th>total</th>
+  	<th>fruit</th>
+  	<th>qty</th>
+  	<th>price</th>
+  	<th>total</th>
   {/snippet}
   {#snippet row(d)}
-    <td>{d.name}</td>
-    <td>{d.qty}</td>
-    <td>{d.price}</td>
-    <td>{d.qty * d.price}</td>
+  	<td>{d.name}</td>
+  	<td>{d.qty}</td>
+  	<td>{d.price}</td>
+  	<td>{d.qty * d.price}</td>
   {/snippet}
   <Table data={fruits} {header} {row} />
   ```
@@ -372,12 +386,13 @@ let { a, b, ...others } = $props();
   Content not wrapped in a snippet declaration becomes the `children` snippet, rendering as fallback content.  
   _Example:_
   ```svelte
-  <!-- App.svelte -->
-  <Button>click me</Button>
   <!-- Button.svelte -->
   <script>
-    let { children } = $props();
+  	let { children } = $props();
   </script>
+
+  <!-- App.svelte -->
+  <Button>click me</Button>
   <button>{@render children()}</button>
   ```
 
@@ -388,13 +403,13 @@ let { a, b, ...others } = $props();
 
 ```svelte
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-  interface Props {
-    data: any[];
-    children: Snippet;
-    row: Snippet<[any]>;
-  }
-  let { data, children, row }: Props = $props();
+	import type { Snippet } from 'svelte';
+	interface Props {
+		data: any[];
+		children: Snippet;
+		row: Snippet<[any]>;
+	}
+	let { data, children, row }: Props = $props();
 </script>
 ```
 
@@ -404,7 +419,7 @@ let { a, b, ...others } = $props();
   _Example:_
   ```svelte
   {#snippet sum(a, b)}
-    <p>{a} + {b} = {a + b}</p>
+  	<p>{a} + {b} = {a + b}</p>
   {/snippet}
   {@render sum(1, 2)}
   ```
@@ -418,7 +433,7 @@ let { a, b, ...others } = $props();
 
   ```svelte
   <svelte:boundary onerror={(error, reset) => console.error(error)}>
-    <FlakyComponent />
+  	<FlakyComponent />
   </svelte:boundary>
   ```
 
@@ -428,10 +443,10 @@ let { a, b, ...others } = $props();
 
   ```svelte
   <svelte:boundary>
-    <FlakyComponent />
-    {#snippet failed(error, reset)}
-      <button onclick={reset}>Oops! Try again</button>
-    {/snippet}
+  	<FlakyComponent />
+  	{#snippet failed(error, reset)}
+  		<button onclick={reset}>Oops! Try again</button>
+  	{/snippet}
   </svelte:boundary>
   ```
 
@@ -442,11 +457,11 @@ let { a, b, ...others } = $props();
 
 ```svelte
 <script>
-  let { cool } = $props();
+	let { cool } = $props();
 </script>
+
 <div class={{ cool, lame: !cool }}>Content</div>
 ```
-
 
 # SvelteKit documentation
 
@@ -522,9 +537,10 @@ export default {
 
 ```svelte
 <script lang="ts">
-  import type { PageProps } from './$types';
-  let { data }: PageProps = $props();
+	import type { PageProps } from './$types';
+	let { data }: PageProps = $props();
 </script>
+
 <h1>{data.title}</h1>
 ```
 
@@ -560,8 +576,8 @@ export const load: PageLoad = () => {
 
 ```svelte
 <script>
-    import { LayoutProps } from './$types';
-    let { children, data } = $props();
+	import { LayoutProps } from './$types';
+	let { children, data } = $props();
 </script>
 
 <p>Some Content that is shared for all pages below this layout</p>
@@ -634,9 +650,10 @@ export async function load({ fetch }) {
 ```svelte
 <!-- file: src/routes/foo/+page.svelte -->
 <script>
-  // "data" prop contains property "result"
-  let { data } = $props();
+	// "data" prop contains property "result"
+	let { data } = $props();
 </script>
+
 {data.result}
 ```
 
@@ -765,13 +782,13 @@ export async function load({ params }) {
 <div>{@html data.post.content}</div>
 
 {#await data.comments}
-  Loading comments...
+	Loading comments...
 {:then comments}
-  {#each comments as comment}
-    <p>{comment.content}</p>
-  {/each}
+	{#each comments as comment}
+		<p>{comment.content}</p>
+	{/each}
 {:catch error}
-  <p>error loading comments: {error.message}</p>
+	<p>error loading comments: {error.message}</p>
 {/await}
 ```
 
@@ -848,11 +865,11 @@ Use it with a simple form:
 <form method="POST">
 	<label>
 		Email
-		<input name="email" type="email">
+		<input name="email" type="email" />
 	</label>
 	<label>
 		Password
-		<input name="password" type="password">
+		<input name="password" type="password" />
 	</label>
 	<button>Log in</button>
 </form>
@@ -883,7 +900,7 @@ Use it with a simple form:
 
 ```svelte
 <script>
-  import type { PageProps } from './$types';
+	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	let { form } = $props();
 </script>
@@ -1157,12 +1174,13 @@ The following are HTML attributes you can put on any HTML element.
 
   ```svelte
   <script>
-    import { goto } from '$app/navigation';
-    function navigate() {
-      goto('/dashboard', { replaceState: true });
-    }
+  	import { goto } from '$app/navigation';
+  	function navigate() {
+  		goto('/dashboard', { replaceState: true });
+  	}
   </script>
-    <button onclick={navigate}>navigate</button>
+
+  <button onclick={navigate}>navigate</button>
   ```
 
 - **invalidate**: re‑run `load` functions that depend on a given URL or custom key
@@ -1265,8 +1283,8 @@ The following are HTML attributes you can put on any HTML element.
 
   ```svelte
   <script>
-    import { navigating } from '$app/state';
-    console.log(navigating.from, navigating.to);
+  	import { navigating } from '$app/state';
+  	console.log(navigating.from, navigating.to);
   </script>
   ```
 
@@ -1276,9 +1294,10 @@ The following are HTML attributes you can put on any HTML element.
 
   ```svelte
   <script>
-    import { page } from '$app/state';
-    const path = $derived(page.url.pathname);
+  	import { page } from '$app/state';
+  	const path = $derived(page.url.pathname);
   </script>
+
   {path}
   ```
 
@@ -1286,12 +1305,12 @@ The following are HTML attributes you can put on any HTML element.
 
   ```svelte
   <script>
-    import { updated } from '$app/state';
-    $effect(() => {
-      if (updated.current) {
-        alert('A new version is available. Refresh?');
-      }
-    })
+  	import { updated } from '$app/state';
+  	$effect(() => {
+  		if (updated.current) {
+  			alert('A new version is available. Refresh?');
+  		}
+  	});
   </script>
   ```
 
@@ -1337,8 +1356,9 @@ Alias for `src/lib` folder, e.g.
 
 ```svelte
 <script>
-  import Button from '$lib/Button.svelte';
+	import Button from '$lib/Button.svelte';
 </script>
+
 <Button>Click me</Button>
 ```
 

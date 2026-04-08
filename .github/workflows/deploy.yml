@@ -13,7 +13,7 @@ jobs:
 
       - name: Install Node.js
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: 20
           cache: npm
 
@@ -21,13 +21,13 @@ jobs:
         run: npm install
 
       - name: Build
-        env: 
+        env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: npm run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
-        with: 
+        with:
           path: 'build/'
 
   deploy:
